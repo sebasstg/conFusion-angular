@@ -1,7 +1,16 @@
 'use strict';
 angular.module('confusionApp')
     .controller('MenuController', ['$scope', 'menuFactory', function($scope, menuFactory) {
-        $scope.dishes = menuFactory.getDishes();
+
+        $scope.dishes = {};
+        
+        menuFactory.getDishes().then(
+            function (response) {
+                $scope.dishes=response.data;
+                $scope.shiwDish=true;
+            }
+        );
+
         $scope.tab = 1;
         $scope.filtText = '';
         $scope.showDetails = false;
@@ -48,8 +57,15 @@ angular.module('confusionApp')
 
     .controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', function($scope, $stateParams, menuFactory) {
         var id = parseInt($stateParams.id,10);
-        var dish = menuFactory.getDish(id);
-        $scope.dish = dish;
+        $scope.dish = {};
+        menuFactory.getDish(id)
+            .then(
+                function(response){
+                    $scope.dish = response.data;
+                    $scope.showDish=true;
+                }
+            );
+
     }])
 
     .controller('DishCommentController', ['$scope', function($scope) {
@@ -65,7 +81,14 @@ angular.module('confusionApp')
     }])
 
     .controller('IndexController', ['$scope', 'menuFactory', 'corporateFactory', function($scope, menuFactory, corporateFactory) {
-        $scope.featDish = menuFactory.getDish(0);
+        //var dish=menuFactory.getDish(parseInt($stateParams.id,10));
+        $scope.featDish = {};
+        menuFactory.getDish(parseInt(0,10))
+            .then(function (response) {
+                $scope.featDish=response.data;
+                $scope.showDish = true;
+            });
+
         $scope.featPromo = menuFactory.getPromotion(0);
         $scope.execChef = corporateFactory.getLeader(3);
     }])
