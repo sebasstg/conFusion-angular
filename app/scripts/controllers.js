@@ -91,6 +91,8 @@ angular.module('confusionApp')
 
         $scope.featPromo = menuFactory.getPromotion(0);
         $scope.execChef = corporateFactory.getLeader(3);
+
+
     }])
 
     .controller('AboutController', ['$scope', 'corporateFactory', function($scope, corporateFactory) {
