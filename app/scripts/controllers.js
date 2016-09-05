@@ -68,7 +68,7 @@ angular.module('confusionApp')
         $scope.invalidChannelSelection = false;
     }])
 
-    .controller('FeedbackController', ['$scope', function ($scope) {
+    .controller('FeedbackController', ['$scope','feedbackFactory', function ($scope,feedbackFactory) {
         $scope.sendFeedback = function () {
             console.log($scope.feedback);
             if ($scope.feedback.agree && ($scope.feedback.mychannel === "")) {
@@ -76,6 +76,7 @@ angular.module('confusionApp')
                 console.log('incorrect');
             } else {
                 $scope.invalidChannelSelection = false;
+                feedbackFactory.getFeedbacks().save($scope.feedback);
                 $scope.feedback = {mychannel: "", firstName: "", lastName: "", agree: false, email: ""};
                 $scope.feedback.mychannel = "";
                 $scope.feedbackForm.$setPristine();
@@ -110,7 +111,7 @@ angular.module('confusionApp')
             function(response) {
                 $scope.message = "Error: "+response.status + " " + response.statusText;
             },
-            function(response) {
+            function() {
                 $scope.message = "Uploading!!!";
             }
         );
@@ -165,15 +166,52 @@ angular.module('confusionApp')
 
                 $scope.message = "Error: "+response.status + " " + response.statusText;
             }
-        )
+        );
 
-        $scope.featPromo = menuFactory.getPromotion(0);
-        $scope.execChef = corporateFactory.getLeader(3);
+        //$scope.featPromo = menuFactory.getPromotion(0);
+        $scope.showPromo = false;
+        $scope.messagePromo = "Loading ...";
+        $scope.featPromo = menuFactory.getPromotion().get({id:0}).$promise.then(
+            function(response){
+                $scope.featPromo = response;
+                $scope.showPromo = true;
+            },
+            function(response) {
+                $scope.messagePromo = "Error: "+response.status + " " + response.statusText;
+            },
+            function () {
+                $scope.messagePromo = "Loading ...";
+            }
+        );
 
+        //$scope.execChef = corporateFactory.getLeader(3);
+        $scope.showExec = false;
+        $scope.messageExec = "Loading ...";
+        $scope.execChef=corporateFactory.getLeaders().get({id:0}).$promise.then(
+            function (response) {
+                $scope.execChef=response;
+                $scope.showExec=true;
+
+            },
+            function (response) {
+                $scope.messageExec = "Error: "+response.status + " " + response.statusText;
+            }
+        );
 
     }])
 
     .controller('AboutController', ['$scope', 'corporateFactory', function ($scope, corporateFactory) {
-        $scope.leaders = corporateFactory.getLeaders();
+        $scope.showLeaders = false;
+        $scope.message = "Loading ...";
+        $scope.leaders = corporateFactory.getLeaders().query(
+
+            function(response) {
+                $scope.leaders = response;
+                $scope.showLeaders = true;
+            },
+            function(response) {
+                $scope.message = "Error: "+response.status + " " + response.statusText;
+            }
+        );
     }])
 ;
